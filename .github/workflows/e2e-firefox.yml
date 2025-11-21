@@ -14,8 +14,8 @@ on:
       INFURA_PROJECT_ID:
         required: false
 
-env:
-  SENTRY_DSN_PERFORMANCE: ${{ vars.SENTRY_DSN_PERFORMANCE }}
+# env:
+#   SENTRY_DSN_PERFORMANCE: ${{ vars.SENTRY_DSN_PERFORMANCE }}
 
 jobs:
   test-e2e-firefox-browserify:

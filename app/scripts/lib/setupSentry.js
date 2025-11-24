@@ -208,6 +208,8 @@ function getSentryEnvironment() {
 }
 
 function getSentryTarget() {
+  return SENTRY_DSN_PERFORMANCE;
+
   if (
     getManifestFlags().sentry?.dsnType === 'performance' &&
     SENTRY_DSN_PERFORMANCE

@@ -24,9 +24,7 @@ const RELEASE = getSentryRelease(
 );
 const SENTRY_DSN = process.env.SENTRY_DSN;
 const SENTRY_DSN_DEV = process.env.SENTRY_DSN_DEV;
-const SENTRY_DSN_PERFORMANCE =
-  process.env.SENTRY_DSN_PERFORMANCE ||
-  'https://17e6db85bd66517e7c828d36f53e2f26@sentry.io/4510302346608640';
+const SENTRY_DSN_PERFORMANCE = process.env.SENTRY_DSN_PERFORMANCE;
 /* eslint-enable prefer-destructuring */
 
 // This is a fake DSN that can be used to test Sentry without sending data to the real Sentry server.
@@ -128,12 +126,12 @@ function getTracesSampleRate(sentryTarget) {
   }
 
   if (flags.ci) {
-    // Report very frequently on main branch, and never on other branches
+    // Report more frequently on main branch, and less frequently on other branches
     // (Unless you use a `flags = {"sentry": {"tracesSampleRate": x.xx}}` override)
     if (flags.ci.branch === 'main') {
       return 0.015;
     }
-    return 1;
+    return 0.005;
   }
 
   if (METAMASK_DEBUG) {
@@ -208,10 +206,11 @@ function getSentryEnvironment() {
 }
 
 function getSentryTarget() {
-  return SENTRY_DSN_PERFORMANCE;
+  const manifestFlags = getManifestFlags();
 
   if (
-    getManifestFlags().sentry?.dsnType === 'performance' &&
+    (manifestFlags.ci.enabled ||
+      manifestFlags.sentry?.dsnType === 'performance') &&
     SENTRY_DSN_PERFORMANCE
   ) {
     return SENTRY_DSN_PERFORMANCE;
@@ -219,9 +218,9 @@ function getSentryTarget() {
 
   if (
     process.env.IN_TEST &&
-    (!SENTRY_DSN_DEV || !getManifestFlags().sentry?.forceEnable)
+    (!SENTRY_DSN_DEV || !manifestFlags.sentry?.forceEnable)
   ) {
-    return SENTRY_DSN_PERFORMANCE;
+    return SENTRY_DSN_FAKE;
   }
 
   if (METAMASK_ENVIRONMENT !== 'production') {

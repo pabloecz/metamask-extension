@@ -133,7 +133,7 @@ function getTracesSampleRate(sentryTarget) {
     if (flags.ci.branch === 'main') {
       return 0.015;
     }
-    return 0.05;
+    return 1;
   }
 
   if (METAMASK_DEBUG) {
